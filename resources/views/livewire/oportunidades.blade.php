@@ -1,4 +1,4 @@
-<div>
+<div class="text-gray-900 bg-white dark:bg-gray-800 dark:text-gray-100">
     <div x-data="{ showAlert: @entangle('alert.show') }" x-show="showAlert" x-effect="if (showAlert) setTimeout(() => $wire.hideAlert(), 5000)">
         <x-alerts :type="$alert['type']" :message="$alert['message']" />
     </div>
@@ -73,8 +73,8 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
                     @if (Auth::user()->isSuperAdmin() || $user->hasRole(['Manager', 'Capturista']))
                         <tr>
                             <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
@@ -102,10 +102,10 @@
                         </tr>
                     @endif
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                     @foreach ($oportunidades as $oportunidad)
                         @if (Auth::user()->isSuperAdmin() || $user->hasRole(['Manager', 'Capturista']))
-                            <tr>
+                        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $oportunidad->venta }}</td>
                                 <td class="relative px-6 py-4 whitespace-nowrap" x-data="{ tooltip: false }">
                                     <div class="max-w-xs truncate cursor-pointer"
@@ -164,7 +164,7 @@
                         @endif
 
                         @if ($user->hasRole('Vendedor'))
-                            <tr>
+                        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $oportunidad->venta }}</td>
                                 <td class="relative px-6 py-4 whitespace-nowrap" x-data="{ tooltip: false }">
                                     <div class="max-w-xs truncate cursor-pointer"

@@ -1,4 +1,4 @@
-<div>
+<div class="bg-white dark:bg-gray-800">
     <x-button wire:click="$set('modalVisible', true)">Crear Rol</x-button>
 
     <x-dialog-modal wire:model="modalVisible">
@@ -9,7 +9,7 @@
         <x-slot name="content">
             <div class="mt-4">
                 <x-label for="name" value="{{ __('Nombre') }}" />
-                <x-input id="name" class="block mt-1 w-full" type="text" wire:model.defer="name" autocomplete="off" />
+                <x-input id="name" class="block w-full mt-1" type="text" wire:model.defer="name" autocomplete="off" />
                 @error('name') <span class="error">{{ $message }}</span> @enderror
             </div>
 
@@ -19,7 +19,7 @@
                     @foreach($permissions as $permission)
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
-                                <x-input type="checkbox" wire:model.defer="selectedPermissions" value="{{ $permission->id }}" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"/>
+                                <x-input type="checkbox" wire:model.defer="selectedPermissions" value="{{ $permission->id }}" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"/>
                             </div>
                             <div class="ml-3 text-sm">
                                 <x-label for="permission-{{ $permission->id }}" class="font-medium text-gray-700">{{ $permission->name }}</x-label>

@@ -1,9 +1,10 @@
-<div>
+<div class="bg-white dark:bg-gray-800">
     <x-datatable
         :headings="$headings"
         :rows="$users"
         :sortField="$sortField"
         :sortDirection="$sortDirection"
+        class="text-gray-900 dark:text-gray-100"
     >
         @foreach($users as $user)
             <x-slot :name="'actions_'.$user['id']">

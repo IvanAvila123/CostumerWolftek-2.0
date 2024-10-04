@@ -1,4 +1,4 @@
-<div>
+<div class="bg-white dark:bg-gray-800">
 
     <x-button wire:click="$set('modalVisible', true)">Crear Oportunidad</x-button>
 

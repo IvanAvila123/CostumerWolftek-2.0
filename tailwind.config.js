@@ -12,11 +12,21 @@ export default {
         "./vendor/ramonrietdijk/livewire-tables/resources/**/*.blade.php"
     ],
 
+    darkMode: 'media', // Esto habilita el modo oscuro basado en las preferencias del sistema
+
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                // Puedes personalizar los colores para el modo oscuro aquí si lo deseas
+                dark: {
+                    'bg-primary': '#1a202c',
+                    'text-primary': '#e2e8f0',
+                    // ... más colores personalizados
+                }
+            }
         },
     },
 
