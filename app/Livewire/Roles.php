@@ -21,9 +21,9 @@ class Roles extends Component
 
     public function delete($id){
 
-       $role = Role::find($id);
-       $role->delete();
-       $role->refreshRoles;
+       $roles = Role::find($id);
+       $roles->delete();
+       $roles->refreshRoles;
     }
 
     public function render()
