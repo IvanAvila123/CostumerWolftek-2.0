@@ -16,6 +16,7 @@ class Clientes extends Component
     public $showCliente = false;
     public $selectedClient = null;
     public $clienteId;
+    public $cliente;
     public $showClientes = true;
     public $showTable = false;
     public $search = '';
@@ -121,6 +122,13 @@ class Clientes extends Component
         $this->showCliente = $count === 0;
         $this->showClientes = $count === 0;
         $this->showTable = $count > 1;
+    }
+
+    public function deleted($id)
+    {
+        $cliente = Cliente::find($id);
+        $cliente->delete();
+        $this->loadClientes();
     }
 
     public function render()
