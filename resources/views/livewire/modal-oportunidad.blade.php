@@ -1,4 +1,4 @@
-<div>
+<div class="bg-white dark:bg-gray-800">
 
     <x-button wire:click="$set('modalVisible', true)">Crear Oportunidad</x-button>
 
@@ -18,7 +18,7 @@
                         @forelse($clientes as $cliente)
                             <li class="px-4 py-2 cursor-pointer hover:bg-gray-100"
                                 wire:click="selectCliente({{ $cliente->id }})">
-                                {{ $cliente->razon }}
+                                {{ $cliente->razon }}-{{ $cliente->cuenta }}
                             </li>
                         @empty
                             <li class="px-4 py-2 text-blue-600">No se encontraron resultados</li>

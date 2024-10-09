@@ -9,23 +9,23 @@
         <x-slot name="content">
             <div class="mt-4">
                 <x-label for="nombre" value="{{ __('Nombre') }}" />
-                <x-input id="nombre" class="block mt-1 w-full" type="text" wire:model.defer="nombre" autocomplete="off" />
-                @error('nombre') <span class="error">{{ $message }}</span> @enderror
+                <x-input id="nombre" class="block w-full mt-1" type="text" wire:model.defer="nombre" autocomplete="off" />
+                @error('nombre') <span class="text-red-600 error dark:text-red-400">{{ $message }}</span> @enderror
             </div>
             <div class="mt-4">
                 <x-label for="apellido" value="{{ __('Apellido') }}" />
-                <x-input id="apellido" class="block mt-1 w-full" type="text" wire:model.defer="apellido" autocomplete="off" />
-                @error('apellido') <span class="error">{{ $message }}</span> @enderror
+                <x-input id="apellido" class="block w-full mt-1" type="text" wire:model.defer="apellido" autocomplete="off" />
+                @error('apellido') <span class="text-red-600 error dark:text-red-400">{{ $message }}</span> @enderror
             </div>
             <div class="mt-4">
                 <x-label for="correo" value="{{ __('Correo') }}" />
-                <x-input id="correo" class="block mt-1 w-full" type="email" wire:model.defer="correo" autocomplete="off" />
-                @error('correo') <span class="error">{{ $message }}</span> @enderror
+                <x-input id="correo" class="block w-full mt-1" type="email" wire:model.defer="correo" autocomplete="off" />
+                @error('correo') <span class="text-red-600 error dark:text-red-400">{{ $message }}</span> @enderror
             </div>
             <div class="mt-4">
                 <x-label for="telefono" value="{{ __('Telefono') }}" />
-                <x-input id="telefono" class="block mt-1 w-full" type="text" wire:model.defer="telefono" autocomplete="off" />
-                @error('telefono') <span class="error">{{ $message }}</span> @enderror
+                <x-input id="telefono" class="block w-full mt-1" type="text" wire:model.defer="telefono" autocomplete="off" />
+                @error('telefono') <span class="text-red-600 error dark:text-red-400">{{ $message }}</span> @enderror
             </div>
         </x-slot>
 
@@ -40,5 +40,3 @@
         </x-slot>
     </x-dialog-modal>
 </div>
-
-

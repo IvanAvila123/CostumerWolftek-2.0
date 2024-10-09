@@ -1,4 +1,4 @@
-<div>
+<div class="bg-white dark:bg-gray-800">
 
     <x-button wire:click="$set('showModal', true)">Informes de venta</x-button>
 
@@ -11,18 +11,18 @@
 
             <div class="mt-4">
                 <x-label for="fechaInicio" value="Fecha de inicio" />
-                <x-input id="fechaInicio" type="date" class="mt-1 block w-full" wire:model="fechaInicio" />
+                <x-input id="fechaInicio" type="date" class="block w-full mt-1" wire:model="fechaInicio" />
             </div>
 
             <div class="mt-4">
                 <x-label for="fechaFin" value="Fecha de fin" />
-                <x-input id="fechaFin" type="date" class="mt-1 block w-full" wire:model="fechaFin" />
+                <x-input id="fechaFin" type="date" class="block w-full mt-1" wire:model="fechaFin" />
             </div>
 
             <div class="mt-4">
                 <x-label for="estado" value="Estado de la venta" />
                 <select id="estado"
-                    class="mt-1 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     wire:model="estado">
                     <option value="">Seleccione un estado</option>
                     <option value="Orden Entregada">Orden Entregada</option>

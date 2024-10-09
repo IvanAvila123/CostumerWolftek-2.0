@@ -1,16 +1,16 @@
-<div>
+<div class="bg-white dark:bg-gray-800">
     <x-dialog-modal wire:model="showModalHistorial">
-        <x-slot name="title">
+        <x-slot name="title" class="text-gray-900 dark:text-gray-100">
             Historial De Cambios
         </x-slot>
 
         <x-slot name="content">
             <div class="mt-4">
-                <div class="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative"
+                <div class="relative overflow-x-auto overflow-y-auto bg-white rounded-lg shadow dark:bg-gray-700"
                     style="max-height: 405px;">
                     @if ($audits && count($audits) > 0)
-                        <table class="w-full text-sm text-left text-gray-500">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">Fecha</th>
                                     <th scope="col" class="px-6 py-3">Usuario</th>
@@ -20,7 +20,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($this->audits as $audit)
-                                    <tr class="bg-white border-b hover:bg-gray-50">
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td class="px-6 py-4">{{ $audit->created_at->format('d/m/Y H:i:s') }}</td>
                                         <td class="px-6 py-4">{{ $audit->user->name ?? 'Sistema' }}</td>
                                         <td class="px-6 py-4">{{ $audit->event }}
@@ -44,7 +44,7 @@
                             </tbody>
                         </table>
                     @else
-                        <p class="text-center py-4">No hay historial de cambios disponible.</p>
+                        <p class="py-4 text-center text-gray-700 dark:text-gray-300">No hay historial de cambios disponible.</p>
                     @endif
                 </div>
             </div>

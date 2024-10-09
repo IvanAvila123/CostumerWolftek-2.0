@@ -26,6 +26,7 @@ class SuperAdminSeeder extends Seeder
                 'username' => 'superadmin',
                 'password' => bcrypt('admin12345678'), // Cambia esto por una contraseña segura
                 'email_verified_at' => now(),
+                'distribuidor_id' => '1',
                 'is_active' => true,
             ]
         );
