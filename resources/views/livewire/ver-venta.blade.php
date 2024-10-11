@@ -129,7 +129,7 @@
                                             <td class="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-gray-300">
                                                 {{ $linea->plan }}</td>
                                             <td class="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-gray-300">
-                                                {{ \Carbon\Carbon::parse($linea->pivot->fecha_linea)->format('d/m/Y') }}
+                                                {{ $linea->pivot->fecha_linea ? \Carbon\Carbon::parse($linea->pivot->fecha_linea)->format('d/m/Y') : 'N/A' }}
                                             </td>
                                         </tr>
                                     @endforeach

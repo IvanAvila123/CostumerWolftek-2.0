@@ -66,4 +66,9 @@ class Linea extends Model implements Auditable
     {
         return $this->belongsToMany(Linea::class, 'oportunidad_linea', 'oportunidad_id', 'linea_id');
     }
+
+    public function oportunidades()
+    {
+        return $this->belongsToMany(Oportunidad::class, 'oportunidad_linea')->withPivot('fecha_linea');
+    }
 }
