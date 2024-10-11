@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Cliente;
 use App\Models\Linea;
 use App\Models\Oportunidad;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -31,6 +32,9 @@ class ModalOportunidad extends Component
     public $estado;
     public $selectedClienteId;
     public $selectedLineas = [];
+    public $lineasNoRenovables = [];
+    public $lineasEnUso = [];
+    public $lineasNoPertenecientes = [];
     public $modalVisible = false;
     public $search = '';
     public $clientes = [];
@@ -41,30 +45,35 @@ class ModalOportunidad extends Component
     public $id_distribuidor;
     public $csvFile;
     public $lineasPorPagina = 10;
-
-    protected function rules()
-{
-    $rules = [
-        'vendedor' => 'required|string|max:255',
-        'venta' => 'required|in:Renovacion,Adicion,Renovacion Anticipada T-1,Renovacion Anticipada,Venta Nueva',
-        'razon' => 'required|string|max:255',
-        'cuenta' => 'required|integer',
-        'id_cliente' => 'required|integer',
-        'entrega' => 'required|string|max:500',
-        'autorizada' => 'required|string|max:255',
-        'comentarios' => 'nullable|string|max:250',
-        'acuerdo' => 'nullable|string|max:255',
-        'actualizacion' => 'required|date',
-        'estado' => 'required|in:Haciendo Contratos,Se ingresa Venta,Revision,Captura,Verificacion De Credito,Rechazada Por Credito,Verificacion de Credito Rechazada,Verificacion De Credito Aprobada,Asignacion De Equipo,Cancela/Envios,Envios/Por Confirmar,Envios/En Ruta,Orden Entregada,Pendiente,Aprobada,Rechazada,Revisando Venta,Se Entrega Contratos',
-        'selectedClienteId' => 'required|exists:clientes,id',
-    ];
-
-    if (!in_array($this->venta, ['Adicion', 'Venta Nueva'])) {
-        $rules['selectedLineas'] = 'required|array|min:1';
+    public $alert = ['show' => false, 'type' => '', 'message' => ''];
+    public function hideAlert()
+    {
+        $this->alert['show'] = false;
     }
 
-    return $rules;
-}
+    protected function rules()
+    {
+        $rules = [
+            'vendedor' => 'required|string|max:255',
+            'venta' => 'required|in:Renovacion,Adicion,Renovacion Anticipada T-1,Renovacion Anticipada,Venta Nueva',
+            'razon' => 'required|string|max:255',
+            'cuenta' => 'required|integer',
+            'id_cliente' => 'required|integer',
+            'entrega' => 'required|string|max:500',
+            'autorizada' => 'required|string|max:255',
+            'comentarios' => 'nullable|string|max:250',
+            'acuerdo' => 'nullable|string|max:255',
+            'actualizacion' => 'required|date',
+            'estado' => 'required|in:Haciendo Contratos,Se ingresa Venta,Revision,Captura,Verificacion De Credito,Rechazada Por Credito,Verificacion de Credito Rechazada,Verificacion De Credito Aprobada,Asignacion De Equipo,Cancela/Envios,Envios/Por Confirmar,Envios/En Ruta,Orden Entregada,Pendiente,Aprobada,Rechazada,Revisando Venta,Se Entrega Contratos',
+            'selectedClienteId' => 'required|exists:clientes,id',
+        ];
+
+        if (!in_array($this->venta, ['Adicion', 'Venta Nueva'])) {
+            $rules['selectedLineas'] = 'required|array|min:1';
+        }
+
+        return $rules;
+    }
 
     #[On('editOportunidad')]
     public function show($id = null)
@@ -118,12 +127,17 @@ class ModalOportunidad extends Component
         $this->razon = $cliente->razon;
         $this->cuenta = $cliente->cuenta;
         $this->id_cliente = $cliente->id_cliente;
-        $this->selectedLineas = []; // Limpiar líneas seleccionadas al cambiar de cliente
-        $this->loadLineas();
+        $this->selectedLineas = [];
+        $this->lineasNoRenovables = [];
+        $this->lineasEnUso = [];
+        $this->lineasNoPertenecientes = [];
+        $this->alert = ['show' => false, 'type' => '', 'message' => ''];
 
         if (empty($this->vendedor)) {
             $this->vendedor = $this->user ? $this->user->name : '';
         }
+
+        $this->loadLineas();
     }
 
     public function loadLineas()
@@ -167,44 +181,45 @@ class ModalOportunidad extends Component
     }
 
     public function save()
-{
-    $this->validate();
+    {
+        $this->validate();
 
-    $oportunidadData = [
-        'vendedor' => $this->vendedor,
-        'venta' => $this->venta,
-        'razon' => $this->razon,
-        'entrega' => $this->entrega,
-        'autorizada' => $this->autorizada,
-        'comentarios' => $this->comentarios ?? 'Sin Comentarios',
-        'acuerdo' => $this->acuerdo ?? 'Sin Acuerdo',
-        'actualizacion' => $this->actualizacion,
-        'estado' => $this->estado,
-        'cliente_id' => $this->selectedClienteId,
-        'user_id' => auth()->id(),
-        'id_ejecutivo' => auth()->user()->distribuidor_id,
-    ];
+        $oportunidadData = [
+            'vendedor' => $this->vendedor,
+            'venta' => $this->venta,
+            'razon' => $this->razon,
+            'entrega' => $this->entrega,
+            'autorizada' => $this->autorizada,
+            'comentarios' => $this->comentarios ?? 'Sin Comentarios',
+            'acuerdo' => $this->acuerdo ?? 'Sin Acuerdo',
+            'actualizacion' => $this->actualizacion,
+            'estado' => $this->estado,
+            'cliente_id' => $this->selectedClienteId,
+            'user_id' => auth()->id(),
+            'id_ejecutivo' => auth()->user()->distribuidor_id,
+        ];
 
-    if ($this->oportunidadId) {
-        $oportunidad = Oportunidad::find($this->oportunidadId);
-        $oportunidad->update($oportunidadData);
-    } else {
-        $oportunidad = Oportunidad::create($oportunidadData);
-    }
-
-    if (!in_array($this->venta, ['Adicion', 'Venta Nueva']) && !empty($this->selectedLineas)) {
-        $lineasData = [];
-        foreach ($this->selectedLineas as $lineaId) {
-            $linea = Linea::find($lineaId);
-            $lineasData[$lineaId] = ['fecha_linea' => $linea->fecha];
+        if ($this->oportunidadId) {
+            $oportunidad = Oportunidad::find($this->oportunidadId);
+            $oportunidad->update($oportunidadData);
+        } else {
+            $oportunidad = Oportunidad::create($oportunidadData);
         }
-        $oportunidad->lineas()->sync($lineasData);
-    }
 
-    $this->modalVisible = false;
-    $this->dispatch('oportunidadUpdated');
-    $this->reset(['vendedor', 'venta', 'razon', 'entrega', 'autorizada', 'actualizacion', 'estado', 'selectedLineas']);
-}
+        if (!in_array($this->venta, ['Adicion', 'Venta Nueva']) && !empty($this->selectedLineas)) {
+            $lineasData = [];
+            foreach ($this->selectedLineas as $linea) {
+                if (is_array($linea) && isset($linea['id'])) {
+                    $lineasData[$linea['id']] = ['fecha_linea' => Linea::find($linea['id'])->fecha];
+                }
+            }
+            $oportunidad->lineas()->sync($lineasData);
+        }
+
+        $this->modalVisible = false;
+        $this->dispatch('oportunidadUpdated');
+        $this->reset(['vendedor', 'venta', 'razon', 'entrega', 'autorizada', 'actualizacion', 'estado', 'selectedLineas']);
+    }
 
     public function mount()
     {
@@ -222,14 +237,82 @@ class ModalOportunidad extends Component
         $path = $this->csvFile->getRealPath();
         $dns = array_map('str_getcsv', file($path));
 
+        $this->selectedLineas = [];
+        $this->lineasEnUso = [];
+        $this->lineasNoRenovables = [];
+        $this->lineasNoPertenecientes = [];
+        $today = now()->startOfDay();
+        $oneMonthLater = $today->copy()->addMonth();
+        $threeMonthsLater = $today->copy()->addMonths(3);
+
         foreach ($dns as $dn) {
-            $linea = Linea::where('dn', $dn[0])->where('cliente_id', $this->selectedClienteId)->first();
+            $linea = Linea::where('dn', $dn[0])
+                ->where('cliente_id', $this->selectedClienteId)
+                ->first();
             if ($linea) {
-                $this->selectedLineas[] = $linea->id;
+                $fechaLinea = \Carbon\Carbon::parse($linea->fecha);
+                if ($fechaLinea <= $today) {
+                    $tipo = 'Renovacion vencida';
+                } elseif ($fechaLinea > $today && $fechaLinea <= $oneMonthLater) {
+                    $tipo = 'Renovacion Anticipada T-1';
+                } elseif ($fechaLinea > $oneMonthLater && $fechaLinea <= $threeMonthsLater) {
+                    $tipo = 'Renovacion Anticipada';
+                } else {
+                    $tipo = 'No elegible para renovación';
+                    $this->lineasNoRenovables[] = $linea->dn;
+                }
+
+                // Verificar si la línea está en uso por otro usuario del mismo distribuidor
+                $lineaEnUso = Oportunidad::where('id_ejecutivo', $this->user->distribuidor_id)
+                    ->whereHas('lineas', function ($query) use ($linea) {
+                        $query->where('lineas.id', $linea->id);
+                    })
+                    ->where('user_id', '!=', $this->user->id)
+                    ->first();
+
+                if ($lineaEnUso) {
+                    $this->lineasEnUso[] = [
+                        'dn' => $linea->dn,
+                        'usuario' => User::find($lineaEnUso->user_id)->name
+                    ];
+                } else {
+                    $this->selectedLineas[] = [
+                        'id' => $linea->id,
+                        'dn' => $linea->dn,
+                        'tipo' => $tipo,
+                        'renovable' => $tipo !== 'No elegible para renovación'
+                    ];
+                }
+            } else {
+                // Si la línea no pertenece al cliente, la agregamos a la nueva array
+                $this->lineasNoPertenecientes[] = $dn[0];
             }
         }
 
-        $this->selectedLineas = array_unique($this->selectedLineas);
+        // Configurar las alertas
+        if (!empty($this->lineasNoRenovables)) {
+            $this->alert = [
+                'show' => true,
+                'type' => 'error',
+                'message' => 'Hay líneas no elegibles para renovación.'
+            ];
+        }
+
+        if (!empty($this->lineasEnUso)) {
+            $this->alert = [
+                'show' => true,
+                'type' => 'warning',
+                'message' => 'Algunas líneas ya están en uso por otros usuarios.'
+            ];
+        }
+
+        if (!empty($this->lineasNoPertenecientes)) {
+            $this->alert = [
+                'show' => true,
+                'type' => 'error',
+                'message' => 'Algunos DNs no pertenecen al cliente seleccionado.'
+            ];
+        }
     }
 
     public function render()

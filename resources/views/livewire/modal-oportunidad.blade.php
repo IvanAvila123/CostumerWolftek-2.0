@@ -141,43 +141,68 @@
                     @endif
 
 
-                    @if ($venta && $venta !== 'Adicion' && $venta !== 'Venta Nueva')
-                        <div class="overflow-x-auto">
-                            <x-label value="{{ __('Líneas') }}" />
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                            Seleccionar</th>
-                                        <th
-                                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                            DN</th>
-                                        <th
-                                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                            Plan</th>
-                                        <th
-                                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                            Fecha Fin</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($lineasPaginadas as $linea)
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <input type="checkbox" wire:model="selectedLineas"
-                                                    value="{{ $linea->id }}"
-                                                    wire:click="toggleLineaSelection({{ $linea->id }})"
-                                                    class="w-5 h-5 text-indigo-600 form-checkbox">
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $linea->dn }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $linea->plan }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $linea->fecha }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                            {{ $lineasPaginadas->links() }}
+                    @if ($alert['show'])
+                        <x-alerts :type="$alert['type']" :message="$alert['message']" />
+                    @endif
+
+                    @if (!empty($selectedLineas))
+                        <div class="mt-4">
+                            <x-label value="{{ __('Líneas Importadas') }}" />
+                            <div class="space-y-4">
+                                @php
+                                    $groupedLineas = collect($selectedLineas)->groupBy('tipo');
+                                @endphp
+                                @foreach ($groupedLineas as $tipo => $lineas)
+                                    <div>
+                                        <h3 class="font-bold">{{ $tipo }}</h3>
+                                        <ul class="list-disc list-inside">
+                                            @foreach ($lineas as $linea)
+                                                <li
+                                                    class="{{ is_array($linea) && isset($linea['renovable']) && $linea['renovable'] ? '' : 'text-red-500' }}">
+                                                    {{ is_array($linea) && isset($linea['dn']) ? $linea['dn'] : $linea }}
+                                                    @if (is_array($linea) && isset($linea['renovable']) && !$linea['renovable'])
+                                                        <span class="text-red-500"> - Esta línea no se puede
+                                                            renovar</span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (!empty($lineasEnUso))
+                        <div class="mt-4">
+                            <h3 class="font-bold">Líneas ya en uso:</h3>
+                            <ul class="list-disc list-inside">
+                                @foreach ($lineasEnUso as $linea)
+                                    <li>{{ $linea['dn'] }} - En uso por: {{ $linea['usuario'] }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if (!empty($lineasNoRenovables))
+                        <div class="mt-4">
+                            <h3 class="font-bold">Líneas no elegibles para renovación:</h3>
+                            <ul class="list-disc list-inside">
+                                @foreach ($lineasNoRenovables as $dn)
+                                    <li>{{ $dn }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if (!empty($lineasNoPertenecientes))
+                        <div class="mt-4">
+                            <h3 class="font-bold">DNs que no pertenecen al cliente:</h3>
+                            <ul class="list-disc list-inside">
+                                @foreach ($lineasNoPertenecientes as $dn)
+                                    <li>{{ $dn }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                     @endif
                 @endif
@@ -281,43 +306,68 @@
                         </div>
                     @endif
 
-                    @if ($venta && $venta !== 'Adicion' && $venta !== 'Venta Nueva')
+                    @if ($alert['show'])
+                        <x-alerts :type="$alert['type']" :message="$alert['message']" />
+                    @endif
+
+                    @if (!empty($selectedLineas))
                         <div class="mt-4">
-                            <x-label value="{{ __('Líneas') }}" />
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                            Seleccionar</th>
-                                        <th
-                                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                            DN</th>
-                                        <th
-                                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                            Plan</th>
-                                        <th
-                                            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                                            Fecha Fin</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach ($lineasPaginadas as $linea)
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <input type="checkbox" wire:model="selectedLineas"
-                                                    value="{{ $linea->id }}"
-                                                    wire:click="toggleLineaSelection({{ $linea->id }})"
-                                                    class="w-5 h-5 text-indigo-600 form-checkbox">
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $linea->dn }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ $linea->plan }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($linea->fecha)->format('d/m/Y') }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                            {{ $lineasPaginadas->links() }}
+                            <x-label value="{{ __('Líneas Importadas') }}" />
+                            <div class="space-y-4">
+                                @php
+                                    $groupedLineas = collect($selectedLineas)->groupBy('tipo');
+                                @endphp
+                                @foreach ($groupedLineas as $tipo => $lineas)
+                                    <div>
+                                        <h3 class="font-bold">{{ $tipo }}</h3>
+                                        <ul class="list-disc list-inside">
+                                            @foreach ($lineas as $linea)
+                                                <li
+                                                    class="{{ is_array($linea) && isset($linea['renovable']) && $linea['renovable'] ? '' : 'text-red-500' }}">
+                                                    {{ is_array($linea) && isset($linea['dn']) ? $linea['dn'] : $linea }}
+                                                    @if (is_array($linea) && isset($linea['renovable']) && !$linea['renovable'])
+                                                        <span class="text-red-500"> - Esta línea no se puede
+                                                            renovar</span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (!empty($lineasEnUso))
+                        <div class="mt-4">
+                            <h3 class="font-bold">Líneas ya en uso:</h3>
+                            <ul class="list-disc list-inside">
+                                @foreach ($lineasEnUso as $linea)
+                                    <li>{{ $linea['dn'] }} - En uso por: {{ $linea['usuario'] }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if (!empty($lineasNoRenovables))
+                        <div class="mt-4">
+                            <h3 class="font-bold">Líneas no elegibles para renovación:</h3>
+                            <ul class="list-disc list-inside">
+                                @foreach ($lineasNoRenovables as $dn)
+                                    <li>{{ $dn }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if (!empty($lineasNoPertenecientes))
+                        <div class="mt-4">
+                            <h3 class="font-bold">DNs que no pertenecen al cliente:</h3>
+                            <ul class="list-disc list-inside">
+                                @foreach ($lineasNoPertenecientes as $dn)
+                                    <li>{{ $dn }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                     @endif
                 @endif
