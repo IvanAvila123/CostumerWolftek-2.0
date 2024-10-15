@@ -46,11 +46,13 @@
                                     {{ __('Ver Detalles') }}
                                 </x-button>
                             </td>
+                            @can('eliminar-cliente')
                             <td class="px-6 py-4 text-sm font-medium text-center whitespace-nowrap">
                                 <x-danger-button wire:click="deleted({{ $cliente['id'] }})" wire:confirm="¿Estás seguro de que deseas eliminar este cliente?">
                                     {{ __('Eliminar') }}
                                 </x-danger-button>
                             </td>
+                            @endcan
                         </tr>
                     @empty
                         <tr>
